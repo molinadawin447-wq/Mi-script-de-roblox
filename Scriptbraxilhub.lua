@@ -120,28 +120,25 @@ for _, index in ipairs(gridOrder) do
 end
 
 --------------------------------------------------------------------------------
--- 2. PANEL IZQUIERDO DESPLEGABLE
+-- 2. PANEL IZQUIERDO DESPLEGABLE (RECORTADO A LA ALTURA SOLICITADA)
 --------------------------------------------------------------------------------
-
--- Panel que se abre/cierra
 local sidePanel = Instance.new("Frame")
 sidePanel.Name = "SidePanel"
-sidePanel.AnchorPoint = Vector2.new(0, 0.5)
-sidePanel.Position = UDim2.new(0, 15, 0.5, 0) -- Centrado verticalmente a la izquierda
-sidePanel.Size = UDim2.new(0, 220, 0, 360) -- Alto y estrecho acorde a la pantalla
+sidePanel.AnchorPoint = Vector2.new(0, 0)
+sidePanel.Position = UDim2.new(0, 15, 0, 8) -- Alineado en la parte superior
+sidePanel.Size = UDim2.new(0, 220, 0, 280) -- Altura recortada a la altura del corte marcado
 sidePanel.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 sidePanel.BorderSizePixel = 0
-sidePanel.Visible = false -- Inicia oculto hasta presionar el botón
+sidePanel.Visible = false
 sidePanel.Parent = screenGui
 
 local panelCorner = Instance.new("UICorner")
 panelCorner.CornerRadius = UDim.new(0, 12)
 panelCorner.Parent = sidePanel
 
--- Título del Panel
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Name = "TitleLabel"
-titleLabel.Text = "MI JUEGO HUB"
+titleLabel.Text = "HUB PANEL"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.Font = Enum.Font.SourceSansBold
 titleLabel.TextSize = 18
@@ -151,7 +148,6 @@ titleLabel.BackgroundTransparency = 1
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.Parent = sidePanel
 
--- Botón para minimizar/cerrar (-) en la esquina superior derecha del panel
 local minimizeBtn = Instance.new("TextButton")
 minimizeBtn.Name = "MinimizeButton"
 minimizeBtn.Text = "-"
@@ -168,7 +164,6 @@ local minCorner = Instance.new("UICorner")
 minCorner.CornerRadius = UDim.new(0, 6)
 minCorner.Parent = minimizeBtn
 
--- Línea separadora horizontal
 local separator = Instance.new("Frame")
 separator.Name = "Separator"
 separator.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
@@ -178,7 +173,7 @@ separator.Size = UDim2.new(1, -20, 0, 2)
 separator.Parent = sidePanel
 
 --------------------------------------------------------------------------------
--- 3. BOTÓN PEQUEÑO PARA ABRIR EL PANEL
+-- 3. BOTÓN IZQUIERDO PEQUEÑO PARA ABRIR/CERRAR
 --------------------------------------------------------------------------------
 local leftButton = Instance.new("TextButton")
 leftButton.Name = "LeftMenuButton"
@@ -194,7 +189,6 @@ local leftCorner = Instance.new("UICorner")
 leftCorner.CornerRadius = UDim.new(0, 8)
 leftCorner.Parent = leftButton
 
--- Control del estado de apertura/cierre
 local function togglePanel()
 	sidePanel.Visible = not sidePanel.Visible
 	if sidePanel.Visible then
