@@ -13,7 +13,7 @@ screenGui.Parent = playerGui
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
 mainFrame.AnchorPoint = Vector2.new(1, 0) 
-mainFrame.Position = UDim2.new(1, -15, 0, 15) -- Margen superior y derecho
+mainFrame.Position = UDim2.new(1, -15, 0, 8) 
 mainFrame.Size = UDim2.new(0, 280, 0, 280)
 mainFrame.BackgroundTransparency = 1
 mainFrame.Parent = screenGui
@@ -26,7 +26,6 @@ gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 gridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- Definición de cada botón según su posición en la cuadrícula
 local buttonData = {
 	-- Columna 1
 	{ text = "INSTA\nRESET", bType = "Flash" },
@@ -53,7 +52,6 @@ local buttonData = {
 	{ text = "HABILIDAD\nSEIS", bType = "Toggle" }
 }
 
--- Reorganización por filas para el UIGridLayout (4x4)
 local gridOrder = {1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12, 16}
 
 for _, index in ipairs(gridOrder) do
@@ -67,7 +65,7 @@ for _, index in ipairs(gridOrder) do
 		button.Font = Enum.Font.SourceSansBold
 		button.TextSize = 11
 		button.TextWrapped = true
-		button.BackgroundColor3 = Color3.fromRGB(5, 5, 5) -- Negro más oscuro
+		button.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
 		button.BorderSizePixel = 0
 		button.Parent = mainFrame
 
@@ -122,35 +120,89 @@ for _, index in ipairs(gridOrder) do
 end
 
 --------------------------------------------------------------------------------
--- 2. BOTÓN IZQUIERDO (MÁS ANCHO Y A LA MITAD DE ALTURA)
+-- 2. PANEL IZQUIERDO DESPLEGABLE
+--------------------------------------------------------------------------------
+
+-- Panel que se abre/cierra
+local sidePanel = Instance.new("Frame")
+sidePanel.Name = "SidePanel"
+sidePanel.AnchorPoint = Vector2.new(0, 0.5)
+sidePanel.Position = UDim2.new(0, 15, 0.5, 0) -- Centrado verticalmente a la izquierda
+sidePanel.Size = UDim2.new(0, 220, 0, 360) -- Alto y estrecho acorde a la pantalla
+sidePanel.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+sidePanel.BorderSizePixel = 0
+sidePanel.Visible = false -- Inicia oculto hasta presionar el botón
+sidePanel.Parent = screenGui
+
+local panelCorner = Instance.new("UICorner")
+panelCorner.CornerRadius = UDim.new(0, 12)
+panelCorner.Parent = sidePanel
+
+-- Título del Panel
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Text = "MI JUEGO HUB"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.TextSize = 18
+titleLabel.Size = UDim2.new(1, -40, 0, 30)
+titleLabel.Position = UDim2.new(0, 10, 0, 8)
+titleLabel.BackgroundTransparency = 1
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = sidePanel
+
+-- Botón para minimizar/cerrar (-) en la esquina superior derecha del panel
+local minimizeBtn = Instance.new("TextButton")
+minimizeBtn.Name = "MinimizeButton"
+minimizeBtn.Text = "-"
+minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+minimizeBtn.Font = Enum.Font.SourceSansBold
+minimizeBtn.TextSize = 22
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+minimizeBtn.BorderSizePixel = 0
+minimizeBtn.Position = UDim2.new(1, -30, 0, 8)
+minimizeBtn.Size = UDim2.new(0, 22, 0, 22)
+minimizeBtn.Parent = sidePanel
+
+local minCorner = Instance.new("UICorner")
+minCorner.CornerRadius = UDim.new(0, 6)
+minCorner.Parent = minimizeBtn
+
+-- Línea separadora horizontal
+local separator = Instance.new("Frame")
+separator.Name = "Separator"
+separator.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+separator.BorderSizePixel = 0
+separator.Position = UDim2.new(0, 10, 0, 42)
+separator.Size = UDim2.new(1, -20, 0, 2)
+separator.Parent = sidePanel
+
+--------------------------------------------------------------------------------
+-- 3. BOTÓN PEQUEÑO PARA ABRIR EL PANEL
 --------------------------------------------------------------------------------
 local leftButton = Instance.new("TextButton")
 leftButton.Name = "LeftMenuButton"
-leftButton.Text = "MENU\nIZQUIERDO"
-leftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-leftButton.Font = Enum.Font.SourceSansBold
-leftButton.TextSize = 12
-leftButton.TextWrapped = true
-leftButton.BackgroundColor3 = Color3.fromRGB(5, 5, 5) -- Negro más oscuro
+leftButton.Text = ""
+leftButton.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
 leftButton.BorderSizePixel = 0
 leftButton.AnchorPoint = Vector2.new(0, 0)
-leftButton.Position = UDim2.new(0, 15, 0, 15) -- Margen superior e izquierdo
-leftButton.Size = UDim2.new(0, 100, 0, 136) -- Más ancho y la mitad de la altura total del menú derecho (~136px)
+leftButton.Position = UDim2.new(0, 15, 0, 8)
+leftButton.Size = UDim2.new(0, 45, 0, 45)
 leftButton.Parent = screenGui
 
 local leftCorner = Instance.new("UICorner")
 leftCorner.CornerRadius = UDim.new(0, 8)
 leftCorner.Parent = leftButton
 
--- Animación de interacción rápida para el botón izquierdo
-local isLeftActive = false
-leftButton.MouseButton1Click:Connect(function()
-	isLeftActive = not isLeftActive
-	if isLeftActive then
+-- Control del estado de apertura/cierre
+local function togglePanel()
+	sidePanel.Visible = not sidePanel.Visible
+	if sidePanel.Visible then
 		leftButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		leftButton.Text = ""
 	else
 		leftButton.BackgroundColor3 = Color3.fromRGB(5, 5, 5)
-		leftButton.Text = "MENU\nIZQUIERDO"
 	end
-end)
+end
+
+leftButton.MouseButton1Click:Connect(togglePanel)
+minimizeBtn.MouseButton1Click:Connect(togglePanel)
