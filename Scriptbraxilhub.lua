@@ -1,86 +1,102 @@
--- main.lua
--- 11 botones cuadrados con esquinas redondeadas, color negro oscuro
--- Distribuidos en formación escalonada
+-- main.lua - 11 botones cuadrados con esquinas redondeadas
+-- Formación escalonada, color negro oscuro
 
 local botones = {}
-local radio = 12          -- radio de las esquinas redondeadas
-local tamaño = 90         -- tamaño de cada botón (cuadrado)
-local espacio = 12        -- espacio entre botones
-local colorBtn = {0.10, 0.10, 0.10, 1}   -- negro oscuro
-local colorBorde = {0.30, 0.30, 0.30, 1}
-local colorHover = {0.22, 0.22, 0.22, 1}
+local RADIO      = 14       -- radio de esquinas redondeadas
+local TAMANO     = 95       -- tamaño de cada botón
+local ESPACIO    = 14       -- espacio entre botones
+local COLOR_BTN  = {0.10, 0.10, 0.10}   -- negro oscuro
+local COLOR_EDGE = {0.28, 0.28, 0.28}   -- borde gris
+local COLOR_HOV  = {0.22, 0.22, 0.22}   -- hover
+local COLOR_TXT  = {0.90, 0.90, 0.90}
 
--- Estructura: fila, columna (para crear el patrón escalonado)
--- Fila 1: 4 botones  -> columnas 1,2,3,4
--- Fila 2: 3 botones  -> columnas 2,3,4
--- Fila 3: 2 botones  -> columnas 3,4
--- Fila 4: 2 botones  -> columnas 3,4
-local distribucion = {
-    {1, 1}, {1, 2}, {1, 3}, {1, 4},   -- fila 1
-    {2, 2}, {2, 3}, {2, 4},           -- fila 2
-    {3, 3}, {3, 4},                   -- fila 3
-    {4, 3}, {4, 4},                   -- fila 4
+-- Distribución {fila, columna}
+-- Fila 1: cols 1,2,3,4  -> 4 botones
+-- Fila 2: cols 2,3,4    -> 3 botones
+-- Fila 3: cols 3,4      -> 2 botones
+-- Fila 4: cols 3,4      -> 2 botones
+local DISTRIBUCION = {
+    {1,1},{1,2},{1,3},{1,4},
+    {2,2},{2,3},{2,4},
+    {3,3},{3,4},
+    {4,3},{4,4},
 }
 
 local anchoVentana, altoVentana
-local origenX, origenY
+local fuente
 
+-- ============================================================
+-- Dibuja un rectángulo con esquinas redondeadas (RELLENO)
+-- Usa polígono en lugar de círculos+rects para evitar gaps
+-- ============================================================
+local function rectRedondeadoRelleno(x, y, w, h, r, color)
+    love.graphics.setColor(color)
+    love.graphics.rectangle("fill", x + r, y,     w - 2*r, h)
+    love.graphics.rectangle("fill", x,     y + r, w,       h - 2*r)
+    love.graphics.circle("fill", x + r,     y + r,     r)
+    love.graphics.circle("fill", x + w - r, y + r,     r)
+    love.graphics.circle("fill", x + r,     y + h - r, r)
+    love.graphics.circle("fill", x + w - r, y + h - r, r)
+end
+
+-- ============================================================
+-- Dibuja SOLO el contorno de un rectángulo redondeado
+-- ============================================================
+local function rectRedondeadoBorde(x, y, w, h, r, color)
+    love.graphics.setColor(color)
+    love.graphics.setLineWidth(2)
+
+    -- Líneas rectas
+    love.graphics.line(x + r, y,         x + w - r, y)         -- arriba
+    love.graphics.line(x + r, y + h,     x + w - r, y + h)     -- abajo
+    love.graphics.line(x,     y + r,     x,         y + h - r) -- izq
+    love.graphics.line(x + w, y + r,     x + w,     y + h - r) -- der
+
+    -- Arcos (LÖVE 11: angle1, angle2 en radianes, sin modo "open")
+    love.graphics.arc("line", x + r,     y + r,     r, math.pi,     math.pi * 1.5)
+    love.graphics.arc("line", x + w - r, y + r,     r, math.pi*1.5, math.pi * 2)
+    love.graphics.arc("line", x + w - r, y + h - r, r, 0,           math.pi * 0.5)
+    love.graphics.arc("line", x + r,     y + h - r, r, math.pi*0.5, math.pi)
+end
+
+-- ============================================================
+-- Carga
+-- ============================================================
 function love.load()
-    love.window.setTitle("11 Botones Escalonados")
-    anchoVentana, altoVentana = 520, 480
-    love.window.setMode(anchoVentana, altoVentana, {resizable = false})
+    love.graphics.setBackgroundColor(0.95, 0.95, 0.95)
+    love.graphics.setDefaultFilter("linear", "linear")
 
-    -- Calcular posición inicial para centrar el bloque
-    local anchoBloque = 4 * tamaño + 3 * espacio
-    local altoBloque  = 4 * tamaño + 3 * espacio
-    origenX = (anchoVentana - anchoBloque) / 2
-    origenY = (altoVentana - altoBloque) / 2
+    anchoVentana = love.graphics.getWidth()
+    altoVentana  = love.graphics.getHeight()
 
-    -- Crear botones
-    for i, pos in ipairs(distribucion) do
+    -- Fuente (LÖVE trae una por defecto, pero por si acaso)
+    fuente = love.graphics.newFont(20)
+    love.graphics.setFont(fuente)
+
+    -- Calcular origen para centrar el bloque completo
+    local anchoBloque = 4 * TAMANO + 3 * ESPACIO
+    local altoBloque  = 4 * TAMANO + 3 * ESPACIO
+    local origenX = (anchoVentana - anchoBloque) / 2
+    local origenY = (altoVentana  - altoBloque)  / 2
+
+    -- Crear los 11 botones
+    botones = {}
+    for i, pos in ipairs(DISTRIBUCION) do
         local fila, col = pos[1], pos[2]
-        local x = origenX + (col - 1) * (tamaño + espacio)
-        local y = origenY + (fila - 1) * (tamaño + espacio)
-
         table.insert(botones, {
-            x = x,
-            y = y,
-            w = tamaño,
-            h = tamaño,
+            x = origenX + (col - 1) * (TAMANO + ESPACIO),
+            y = origenY + (fila - 1) * (TAMANO + ESPACIO),
+            w = TAMANO,
+            h = TAMANO,
             id = i,
             hover = false,
         })
     end
 end
 
--- Función que dibuja un rectángulo con esquinas redondeadas
-local function rectRedondeado(x, y, w, h, r, color)
-    love.graphics.setColor(color)
-    -- Círculos en las 4 esquinas
-    love.graphics.circle("fill", x + r,     y + r,     r)
-    love.graphics.circle("fill", x + w - r, y + r,     r)
-    love.graphics.circle("fill", x + r,     y + h - r, r)
-    love.graphics.circle("fill", x + w - r, y + h - r, r)
-    -- Rectángulos del centro
-    love.graphics.rectangle("fill", x + r, y,     w - 2*r, h)
-    love.graphics.rectangle("fill", x,     y + r, w,       h - 2*r)
-end
-
-local function rectRedondeadoLinea(x, y, w, h, r, color)
-    love.graphics.setColor(color)
-    love.graphics.setLineWidth(2)
-    -- 4 lados
-    love.graphics.line(x + r, y,         x + w - r, y)         -- arriba
-    love.graphics.line(x + r, y + h,     x + w - r, y + h)     -- abajo
-    love.graphics.line(x,     y + r,     x,         y + h - r) -- izq
-    love.graphics.line(x + w, y + r,     x + w,     y + h - r) -- der
-    -- 4 arcos
-    love.graphics.arc("line", "open", x + r,     y + r,     r, math.pi,      math.pi*1.5)
-    love.graphics.arc("line", "open", x + w - r, y + r,     r, math.pi*1.5,  math.pi*2)
-    love.graphics.arc("line", "open", x + w - r, y + h - r, r, 0,            math.pi*0.5)
-    love.graphics.arc("line", "open", x + r,     y + h - r, r, math.pi*0.5,  math.pi)
-end
-
+-- ============================================================
+-- Update
+-- ============================================================
 function love.update(dt)
     local mx, my = love.mouse.getPosition()
     for _, b in ipairs(botones) do
@@ -89,31 +105,32 @@ function love.update(dt)
     end
 end
 
+-- ============================================================
+-- Draw
+-- ============================================================
 function love.draw()
-    -- Fondo
-    love.graphics.setColor(0.95, 0.95, 0.95)
-    love.graphics.rectangle("fill", 0, 0, anchoVentana, altoVentana)
-
-    -- Dibujar cada botón
     for _, b in ipairs(botones) do
-        local col = b.hover and colorHover or colorBtn
-        rectRedondeado(b.x, b.y, b.w, b.h, radio, col)
-        rectRedondeadoLinea(b.x, b.y, b.w, b.h, radio, colorBorde)
+        local col = b.hover and COLOR_HOV or COLOR_BTN
+        rectRedondeadoRelleno(b.x, b.y, b.w, b.h, RADIO, col)
+        rectRedondeadoBorde  (b.x, b.y, b.w, b.h, RADIO, COLOR_EDGE)
 
-        -- Número dentro del botón
-        love.graphics.setColor(0.85, 0.85, 0.85)
+        -- Número del botón
+        love.graphics.setColor(COLOR_TXT)
         local texto = tostring(b.id)
-        local fuente = love.graphics.getFont()
         local tw = fuente:getWidth(texto)
         local th = fuente:getHeight()
         love.graphics.print(texto, b.x + (b.w - tw)/2, b.y + (b.h - th)/2)
     end
 end
 
+-- ============================================================
+-- Click
+-- ============================================================
 function love.mousepressed(x, y, button)
     if button == 1 then
         for _, b in ipairs(botones) do
-            if b.hover then
+            if x >= b.x and x <= b.x + b.w
+           and y >= b.y and y <= b.y + b.h then
                 print("Botón " .. b.id .. " presionado")
             end
         end
