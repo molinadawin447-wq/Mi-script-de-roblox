@@ -319,15 +319,15 @@ local function addActionRow(parent,label,kbKey,onAction,order)
 end
 
 -- ============================================================
--- BUILD GUI (función que crea el nuevo panel GUI)
+-- BUILD GUI
 -- ============================================================
-local GuiHub, Outer, MiniBtn -- Referencias globales para poder abrir/cerrar
+local GuiHub, Outer, MiniBtn
 
 local function buildGUI()
     GuiHub=Instance.new("ScreenGui")
     GuiHub.Name="BRAxILHub"; GuiHub.ResetOnSpawn=false
     GuiHub.ZIndexBehavior=Enum.ZIndexBehavior.Sibling; GuiHub.Parent=PlayerGui
-    GuiHub.Enabled = false -- Empieza oculto hasta que se abra con el botón izquierdo
+    GuiHub.Enabled = false
     GuiRefs.hub=GuiHub
 
     Outer=Instance.new("Frame")
@@ -359,10 +359,9 @@ local function buildGUI()
 
     local TL=Instance.new("TextLabel")
     TL.Position=UDim2.new(0,14,0,8); TL.Size=UDim2.new(1,-90,0,22); TL.BackgroundTransparency=1
-    TL.Text="BRAxIL HUB"; TL.TextColor3=Color3.fromRGB(90,90,90); TL.TextSize=17; TL.Font=Enum.Font.GothamBlack
+    TL.Text="BRAxIL HUB"; TL.TextColor3=Color3.fromRGB(255,255,255); TL.TextSize=17; TL.Font=Enum.Font.GothamBlack
     TL.TextXAlignment=Enum.TextXAlignment.Left; TL.Parent=HF; TL.ZIndex=3
-
-    registerWhiteShadow(TL, 6)
+    -- Sombra blanca removida del título del panel
 
     local ML=Instance.new("TextLabel")
     ML.Position=UDim2.new(0,14,0,32); ML.Size=UDim2.new(0,200,0,14); ML.BackgroundTransparency=1
@@ -381,13 +380,13 @@ local function buildGUI()
     MiniBtn=Instance.new("TextButton")
     MiniBtn.Size=UDim2.new(0,110,0,28); MiniBtn.Position=UDim2.new(0,15,0,65)
     MiniBtn.BackgroundColor3=C.bgDark; MiniBtn.BorderSizePixel=0
-    MiniBtn.Text="BRAxIL HUB"; MiniBtn.TextColor3=Color3.fromRGB(90,90,90); MiniBtn.Font=Enum.Font.GothamBlack; MiniBtn.TextSize=11
+    MiniBtn.Text="BRAxIL HUB"; MiniBtn.TextColor3=Color3.fromRGB(255,255,255); MiniBtn.Font=Enum.Font.GothamBlack; MiniBtn.TextSize=11
     MiniBtn.ZIndex=20; MiniBtn.Visible=false; MiniBtn.Parent=GuiHub
     guiCorner(MiniBtn,8); guiStroke(MiniBtn,Color3.fromRGB(45,45,45),1.2)
     makeDraggable_cyber(MiniBtn, MiniBtn)
     MiniBtn.MouseEnter:Connect(function() tw(MiniBtn,{BackgroundColor3=Color3.fromRGB(22,22,22)}) end)
     MiniBtn.MouseLeave:Connect(function() tw(MiniBtn,{BackgroundColor3=C.bgDark}) end)
-    registerWhiteShadow(MiniBtn, 8)
+    -- Sombra blanca removida del MiniBtn
 
     local function showGui() Outer.Visible=true; MiniBtn.Visible=false end
     local function hideGui() Outer.Visible=false; MiniBtn.Visible=true end
@@ -398,8 +397,11 @@ local function buildGUI()
     HSep.Position=UDim2.new(0,14,0,62); HSep.Size=UDim2.new(1,-28,0,1); HSep.BackgroundColor3=C.blue
     HSep.BackgroundTransparency=0.7; HSep.BorderSizePixel=0; HSep.Parent=Inner; HSep.ZIndex=2
 
+    -- ============================================================
+    -- CATEGORÍAS DEL LADO IZQUIERDO (Speed, Combat, Steal, Movement, Visual)
+    -- ============================================================
     local LeftPanel=Instance.new("Frame")
-    LeftPanel.Name="LeftPanel"; LeftPanel.Size=UDim2.new(0,85,1,-118); LeftPanel.Position=UDim2.new(1,-85,0,63)
+    LeftPanel.Name="LeftPanel"; LeftPanel.Size=UDim2.new(0,85,1,-118); LeftPanel.Position=UDim2.new(0,6,0,70)
     LeftPanel.BackgroundColor3=C.bgDark; LeftPanel.BackgroundTransparency=0.5; LeftPanel.BorderSizePixel=0
     LeftPanel.Parent=Inner; guiCorner(LeftPanel,12); LeftPanel.ZIndex=2
 
@@ -414,7 +416,7 @@ local function buildGUI()
     GuiRefs.categoryList=CatList
 
     local CF=Instance.new("ScrollingFrame")
-    CF.Name="ContentFrame"; CF.Size=UDim2.new(1,-95,1,-118); CF.Position=UDim2.new(0,0,0,63)
+    CF.Name="ContentFrame"; CF.Size=UDim2.new(1,-103,1,-118); CF.Position=UDim2.new(0,97,0,70)
     CF.BackgroundTransparency=1; CF.BorderSizePixel=0
     CF.ScrollBarThickness=8
     CF.ScrollBarImageColor3=Color3.fromRGB(255,255,255)
@@ -431,9 +433,7 @@ local function buildGUI()
     BotSep.Position=UDim2.new(0,8,1,-54); BotSep.Size=UDim2.new(1,-16,0,1); BotSep.BackgroundColor3=C.blue
     BotSep.BackgroundTransparency=0.65; BotSep.BorderSizePixel=0; BotSep.Parent=Inner; BotSep.ZIndex=2
 
-    -- ============================================================
     -- CATEGORIES
-    -- ============================================================
     local Categories={"Speed","Combat","Steal","Movement","Visual"}
     local CategoryRefs={contents={},btnsSide={},active="Speed"}
     for _,name in pairs(Categories) do
@@ -683,7 +683,6 @@ local function buildGUI()
         hov4.MouseEnter:Connect(function() tw(resetRow,{BackgroundTransparency=0.3}) end); hov4.MouseLeave:Connect(function() tw(resetRow,{BackgroundTransparency=0.5}) end)
     end
 
-    -- KEYBINDS GLOBALES
     UIS.InputBegan:Connect(function(inp,gp)
         if gp then return end
         if UIS:GetFocusedTextBox() then return end
@@ -719,22 +718,23 @@ gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 gridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
+-- Botones conectados a las funciones del panel GUI
 local buttonData = {
-	{ text = "INSTA\nRESET", bType = "Flash" },
-	{ text = "AUTO\nLEFT", bType = "Toggle" },
-	{ text = "AUTO\nRIGHT", bType = "Toggle" },
+	{ text = "INSTA\nRESET", bType = "Flash", action = function() cursedInstaReset() end },
+	{ text = "AUTO\nLEFT", bType = "Toggle", toggle = function(on) autoLeftEnabled=on; if autoLeftSetVisual then autoLeftSetVisual(on) end; saveConfig() end },
+	{ text = "AUTO\nRIGHT", bType = "Toggle", toggle = function(on) autoRightEnabled=on; if autoRightSetVisual then autoRightSetVisual(on) end; saveConfig() end },
 	
-	{ text = "BAT\nV2", bType = "Toggle" },
-	{ text = "BAT\nAIMBOT", bType = "Toggle" },
-	{ text = "LAGGER\nMODE", bType = "Toggle" },
-	
-	{ text = "", bType = "None" },
-	{ text = "CARRY\nSPD", bType = "Toggle" },
-	{ text = "DROP\nBR", bType = "Flash" },
+	{ text = "BAT\nV2", bType = "Toggle", toggle = function(on) BRAXIL.batV2=on; saveConfig() end },
+	{ text = "BAT\nAIMBOT", bType = "Toggle", toggle = function(on) autoBatEnabled=on; if autoBatSetVisual then autoBatSetVisual(on) end; saveConfig() end },
+	{ text = "LAGGER\nMODE", bType = "Toggle", toggle = function(on) laggerModeEnabled=on; if GuiToggleSetters.laggerToggle then GuiToggleSetters.laggerToggle(on) end; refreshSpeedModeLabel(); saveConfig() end },
 	
 	{ text = "", bType = "None" },
-	{ text = "TP\nDOWN", bType = "Flash" },
-	{ text = "TP\nBAT", bType = "Flash" }
+	{ text = "CARRY\nSPD", bType = "Toggle", toggle = function(on) carrySpeedActive=on; if GuiToggleSetters.carryMode then GuiToggleSetters.carryMode(on) end; refreshSpeedModeLabel(); saveConfig() end },
+	{ text = "DROP\nBR", bType = "Flash", action = function() runDrop() end },
+	
+	{ text = "", bType = "None" },
+	{ text = "TP\nDOWN", bType = "Flash", action = function() runTPFloor() end },
+	{ text = "TP\nBAT", bType = "Flash", action = function() BRAXIL.tpBat = true; task.delay(0.3, function() BRAXIL.tpBat = false end) end }
 }
 
 for index, data in ipairs(buttonData) do
@@ -765,22 +765,29 @@ for index, data in ipairs(buttonData) do
 					button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 					button.TextColor3 = Color3.fromRGB(0, 0, 0)
 					
+					-- Conectar al panel
+					if data.toggle then data.toggle(true) end
+					
 					timerThread = task.delay(2400, function()
 						if isActive then
 							isActive = false
 							button.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 							button.TextColor3 = Color3.fromRGB(255, 255, 255)
+							if data.toggle then data.toggle(false) end
 						end
 					end)
 				else
 					if timerThread then task.cancel(timerThread) end
 					button.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 					button.TextColor3 = Color3.fromRGB(255, 255, 255)
+					if data.toggle then data.toggle(false) end
 				end
 				
 			elseif data.bType == "Flash" then
 				button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 				button.TextColor3 = Color3.fromRGB(0, 0, 0)
+				
+				if data.action then data.action() end
 				
 				task.wait(0.30)
 				
@@ -796,89 +803,8 @@ for index, data in ipairs(buttonData) do
 end
 
 -- ============================================================
--- BOTÓN IZQUIERDO "BRAxIL HUB" (ARRASTRABLE + ABRE EL NUEVO PANEL)
+-- CONSTRUIR PANEL GUI
 -- ============================================================
-local leftButton = Instance.new("TextButton")
-leftButton.Name = "LeftMenuButton"
-leftButton.Text = "BRAxIL HUB"
-leftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-leftButton.Font = Enum.Font.SourceSansBold
-leftButton.TextSize = 13
-leftButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-leftButton.BorderSizePixel = 0
-leftButton.AnchorPoint = Vector2.new(0, 0)
-leftButton.Position = UDim2.new(0, 15, 0, 65)
-leftButton.Size = UDim2.new(0, 130, 0, 35)
-leftButton.Parent = screenGui
-
-local leftCorner = Instance.new("UICorner")
-leftCorner.CornerRadius = UDim.new(0, 8)
-leftCorner.Parent = leftButton
-
--- Sistema de arrastre con detección de toque
-local btnDragging = false
-local btnDragInput = nil
-local btnDragStart = nil
-local btnStartPos = nil
-local btnWasDragged = false
-
-leftButton.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 
-		or input.UserInputType == Enum.UserInputType.Touch then
-		btnDragging = true
-		btnWasDragged = false
-		btnDragStart = input.Position
-		btnStartPos = leftButton.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				btnDragging = false
-			end
-		end)
-	end
-end)
-
-leftButton.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement 
-		or input.UserInputType == Enum.UserInputType.Touch then
-		btnDragInput = input
-	end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-	if btnDragging and input == btnDragInput then
-		local delta = input.Position - btnDragStart
-		if delta.Magnitude > 5 then
-			btnWasDragged = true
-		end
-		leftButton.Position = UDim2.new(
-			btnStartPos.X.Scale,
-			btnStartPos.X.Offset + delta.X,
-			btnStartPos.Y.Scale,
-			btnStartPos.Y.Offset + delta.Y
-		)
-	end
-end)
-
--- ============================================================
--- CONSTRUIR EL NUEVO PANEL GUI Y CONECTAR EL BOTÓN IZQUIERDO
--- ============================================================
-buildGUI() -- Crea el nuevo panel (empieza oculto con Enabled = false)
-
--- Al soltar el botón izquierdo sin arrastrar: ABRIR el nuevo panel GUI
-leftButton.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 
-		or input.UserInputType == Enum.UserInputType.Touch then
-		if not btnWasDragged then
-			-- Abrir el nuevo panel GUI
-			if GuiHub then
-				GuiHub.Enabled = true
-				if Outer then Outer.Visible = true end
-				if MiniBtn then MiniBtn.Visible = false end
-			end
-		end
-		btnWasDragged = false
-	end
-end)
+buildGUI()
 
 print("BRAxIL HUB GUI LOADED")
