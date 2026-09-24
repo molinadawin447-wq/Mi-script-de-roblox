@@ -8,7 +8,7 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = playerGui
 
 --------------------------------------------------------------------------------
--- 1. MENÚ PRINCIPAL (LADO DERECHO - EXACTO A LA IMAGEN)
+-- 1. MENÚ PRINCIPAL (LADO DERECHO)
 --------------------------------------------------------------------------------
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
@@ -54,7 +54,7 @@ for index, data in ipairs(buttonData) do
 		local button = Instance.new("TextButton")
 		button.Name = "Btn_" .. index
 		button.Text = data.text
-		button.TextColor3 = Color3.fromRGB(200, 200, 200)
+		button.TextColor3 = Color3.fromRGB(255, 255, 255) -- Texto blanco
 		button.Font = Enum.Font.SourceSansBold
 		button.TextSize = 10
 		button.TextWrapped = true
@@ -66,14 +66,7 @@ for index, data in ipairs(buttonData) do
 		uiCorner.CornerRadius = UDim.new(0, 10)
 		uiCorner.Parent = button
 
-		local uiStroke = Instance.new("UIStroke")
-		uiStroke.Color = Color3.fromRGB(80, 80, 80)
-		uiStroke.Thickness = 1.5
-		uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-		uiStroke.Parent = button
-
 		local isActive = false
-		local originalText = data.text
 		local timerThread = nil
 
 		button.MouseButton1Click:Connect(function()
@@ -88,13 +81,13 @@ for index, data in ipairs(buttonData) do
 						if isActive then
 							isActive = false
 							button.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-							button.TextColor3 = Color3.fromRGB(200, 200, 200)
+							button.TextColor3 = Color3.fromRGB(255, 255, 255)
 						end
 					end)
 				else
 					if timerThread then task.cancel(timerThread) end
 					button.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-					button.TextColor3 = Color3.fromRGB(200, 200, 200)
+					button.TextColor3 = Color3.fromRGB(255, 255, 255)
 				end
 				
 			elseif data.bType == "Flash" then
@@ -104,7 +97,7 @@ for index, data in ipairs(buttonData) do
 				task.wait(0.30)
 				
 				button.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-				button.TextColor3 = Color3.fromRGB(200, 200, 200)
+				button.TextColor3 = Color3.fromRGB(255, 255, 255)
 			end
 		end)
 	else
@@ -115,13 +108,13 @@ for index, data in ipairs(buttonData) do
 end
 
 --------------------------------------------------------------------------------
--- 2. PANEL IZQUIERDO DESPLEGABLE
+-- 2. PANEL IZQUIERDO DESPLEGABLE (MÁS ANCHO, MISMA ALTURA)
 --------------------------------------------------------------------------------
 local sidePanel = Instance.new("Frame")
 sidePanel.Name = "SidePanel"
 sidePanel.AnchorPoint = Vector2.new(0, 0)
 sidePanel.Position = UDim2.new(0, 15, 0, 10)
-sidePanel.Size = UDim2.new(0, 220, 0, 280)
+sidePanel.Size = UDim2.new(0, 280, 0, 280) -- Más ancho, misma altura
 sidePanel.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
 sidePanel.BorderSizePixel = 0
 sidePanel.Visible = false
@@ -168,12 +161,12 @@ separator.Size = UDim2.new(1, -20, 0, 2)
 separator.Parent = sidePanel
 
 --------------------------------------------------------------------------------
--- 3. BOTÓN IZQUIERDO (BRAxIL HUB)
+-- 3. BOTÓN IZQUIERDO (BRAxIL HUB) - SIN BORDE
 --------------------------------------------------------------------------------
 local leftButton = Instance.new("TextButton")
 leftButton.Name = "LeftMenuButton"
 leftButton.Text = "BRAxIL HUB"
-leftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+leftButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- Texto blanco
 leftButton.Font = Enum.Font.SourceSansBold
 leftButton.TextSize = 13
 leftButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
@@ -186,12 +179,6 @@ leftButton.Parent = screenGui
 local leftCorner = Instance.new("UICorner")
 leftCorner.CornerRadius = UDim.new(0, 8)
 leftCorner.Parent = leftButton
-
-local leftStroke = Instance.new("UIStroke")
-leftStroke.Color = Color3.fromRGB(80, 80, 80)
-leftStroke.Thickness = 1.5
-leftStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-leftStroke.Parent = leftButton
 
 local function togglePanel()
 	sidePanel.Visible = not sidePanel.Visible
