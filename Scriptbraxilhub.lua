@@ -103,17 +103,22 @@ for index, data in ipairs(buttonData) do
 end
 
 --------------------------------------------------------------------------------
--- 2. PANEL IZQUIERDO DESPLEGABLE (SIN FONDO, MISMO TAMAÑO Y ESTRUCTURA)
+-- 2. PANEL IZQUIERDO DESPLEGABLE (FONDO NEGRO)
 --------------------------------------------------------------------------------
 local sidePanel = Instance.new("Frame")
 sidePanel.Name = "SidePanel"
 sidePanel.AnchorPoint = Vector2.new(0, 0)
-sidePanel.Position = UDim2.new(0, 160, 0, 10) -- Alineado en el centro/izquierda como en la foto
-sidePanel.Size = UDim2.new(0, 220, 0, 360) -- Alto rectangular idéntico al de la imagen
-sidePanel.BackgroundTransparency = 1 -- SIN FONDO
+sidePanel.Position = UDim2.new(0, 160, 0, 10)
+sidePanel.Size = UDim2.new(0, 220, 0, 360)
+sidePanel.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Fondo negro
+sidePanel.BackgroundTransparency = 0
 sidePanel.BorderSizePixel = 0
 sidePanel.Visible = false
 sidePanel.Parent = screenGui
+
+local panelCorner = Instance.new("UICorner")
+panelCorner.CornerRadius = UDim.new(0, 12)
+panelCorner.Parent = sidePanel
 
 -- Título BRAxIL HUB (Arriba)
 local titleLabel = Instance.new("TextLabel")
@@ -146,7 +151,7 @@ local minCorner = Instance.new("UICorner")
 minCorner.CornerRadius = UDim.new(0, 4)
 minCorner.Parent = minimizeBtn
 
--- Pestañas laterales del borde derecho (Velocidad, Combate, Steal, etc.)
+-- Pestañas laterales del borde derecho
 local tabFrame = Instance.new("Frame")
 tabFrame.Name = "TabFrame"
 tabFrame.Size = UDim2.new(0, 60, 1, -40)
@@ -248,7 +253,7 @@ createInputRow("Carry Mode", "C")
 createInputRow("Modo Lagger", "K")
 
 --------------------------------------------------------------------------------
--- 3. BOTÓN IZQUIERDO (BRAxIL HUB)
+-- 3. BOTÓN IZQUIERDO (BRAxIL HUB) - DESAPARECE AL ABRIR PANEL
 --------------------------------------------------------------------------------
 local leftButton = Instance.new("TextButton")
 leftButton.Name = "LeftMenuButton"
@@ -267,16 +272,17 @@ local leftCorner = Instance.new("UICorner")
 leftCorner.CornerRadius = UDim.new(0, 8)
 leftCorner.Parent = leftButton
 
-local function togglePanel()
-	sidePanel.Visible = not sidePanel.Visible
-	if sidePanel.Visible then
-		leftButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		leftButton.TextColor3 = Color3.fromRGB(0, 0, 0)
-	else
-		leftButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-		leftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-	end
+-- Función para abrir el panel (oculta el botón)
+local function openPanel()
+	sidePanel.Visible = true
+	leftButton.Visible = false -- El botón desaparece al abrir el panel
 end
 
-leftButton.MouseButton1Click:Connect(togglePanel)
-minimizeBtn.MouseButton1Click:Connect(togglePanel)
+-- Función para cerrar el panel (muestra el botón de nuevo)
+local function closePanel()
+	sidePanel.Visible = false
+	leftButton.Visible = true -- El botón reaparece al cerrar el panel
+end
+
+leftButton.MouseButton1Click:Connect(openPanel)
+minimizeBtn.MouseButton1Click:Connect(closePanel)
