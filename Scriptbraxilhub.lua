@@ -26,25 +26,20 @@ gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 gridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- Configuración de botones basada en la imagen (3 columnas)
 local buttonData = {
-	-- Fila 1
 	{ text = "INSTA\nRESET", bType = "Flash" },
 	{ text = "AUTO\nLEFT", bType = "Toggle" },
 	{ text = "AUTO\nRIGHT", bType = "Toggle" },
 	
-	-- Fila 2
 	{ text = "BAT\nV2", bType = "Toggle" },
 	{ text = "BAT\nAIMBOT", bType = "Toggle" },
 	{ text = "LAGGER\nMODE", bType = "Toggle" },
 	
-	-- Fila 3
-	{ text = "", bType = "None" }, -- Espacio vacío
+	{ text = "", bType = "None" },
 	{ text = "CARRY\nSPD", bType = "Toggle" },
 	{ text = "DROP\nBR", bType = "Flash" },
 	
-	-- Fila 4
-	{ text = "", bType = "None" }, -- Espacio vacío
+	{ text = "", bType = "None" },
 	{ text = "TP\nDOWN", bType = "Flash" },
 	{ text = "TP\nBAT", bType = "Flash" }
 }
@@ -54,7 +49,7 @@ for index, data in ipairs(buttonData) do
 		local button = Instance.new("TextButton")
 		button.Name = "Btn_" .. index
 		button.Text = data.text
-		button.TextColor3 = Color3.fromRGB(255, 255, 255) -- Texto blanco
+		button.TextColor3 = Color3.fromRGB(255, 255, 255)
 		button.Font = Enum.Font.SourceSansBold
 		button.TextSize = 10
 		button.TextWrapped = true
@@ -108,65 +103,157 @@ for index, data in ipairs(buttonData) do
 end
 
 --------------------------------------------------------------------------------
--- 2. PANEL IZQUIERDO DESPLEGABLE (MÁS ANCHO, MISMA ALTURA)
+-- 2. PANEL IZQUIERDO DESPLEGABLE (SIN FONDO, MISMO TAMAÑO Y ESTRUCTURA)
 --------------------------------------------------------------------------------
 local sidePanel = Instance.new("Frame")
 sidePanel.Name = "SidePanel"
 sidePanel.AnchorPoint = Vector2.new(0, 0)
-sidePanel.Position = UDim2.new(0, 15, 0, 10)
-sidePanel.Size = UDim2.new(0, 280, 0, 280) -- Más ancho, misma altura
-sidePanel.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+sidePanel.Position = UDim2.new(0, 160, 0, 10) -- Alineado en el centro/izquierda como en la foto
+sidePanel.Size = UDim2.new(0, 220, 0, 360) -- Alto rectangular idéntico al de la imagen
+sidePanel.BackgroundTransparency = 1 -- SIN FONDO
 sidePanel.BorderSizePixel = 0
 sidePanel.Visible = false
 sidePanel.Parent = screenGui
 
-local panelCorner = Instance.new("UICorner")
-panelCorner.CornerRadius = UDim.new(0, 12)
-panelCorner.Parent = sidePanel
-
+-- Título BRAxIL HUB (Arriba)
 local titleLabel = Instance.new("TextLabel")
 titleLabel.Name = "TitleLabel"
-titleLabel.Text = "HUB PANEL"
+titleLabel.Text = "BRAxIL HUB\nHUB • PREMIUM"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.Font = Enum.Font.SourceSansBold
-titleLabel.TextSize = 18
+titleLabel.TextSize = 14
 titleLabel.Size = UDim2.new(1, -40, 0, 30)
-titleLabel.Position = UDim2.new(0, 10, 0, 8)
+titleLabel.Position = UDim2.new(0, 10, 0, 5)
 titleLabel.BackgroundTransparency = 1
 titleLabel.TextXAlignment = Enum.TextXAlignment.Left
 titleLabel.Parent = sidePanel
 
+-- Botón Minimizar (-)
 local minimizeBtn = Instance.new("TextButton")
 minimizeBtn.Name = "MinimizeButton"
 minimizeBtn.Text = "-"
 minimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 minimizeBtn.Font = Enum.Font.SourceSansBold
-minimizeBtn.TextSize = 22
-minimizeBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+minimizeBtn.TextSize = 18
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+minimizeBtn.BackgroundTransparency = 0.3
 minimizeBtn.BorderSizePixel = 0
-minimizeBtn.Position = UDim2.new(1, -30, 0, 8)
-minimizeBtn.Size = UDim2.new(0, 22, 0, 22)
+minimizeBtn.Position = UDim2.new(1, -25, 0, 5)
+minimizeBtn.Size = UDim2.new(0, 20, 0, 20)
 minimizeBtn.Parent = sidePanel
 
 local minCorner = Instance.new("UICorner")
-minCorner.CornerRadius = UDim.new(0, 6)
+minCorner.CornerRadius = UDim.new(0, 4)
 minCorner.Parent = minimizeBtn
 
-local separator = Instance.new("Frame")
-separator.Name = "Separator"
-separator.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-separator.BorderSizePixel = 0
-separator.Position = UDim2.new(0, 10, 0, 42)
-separator.Size = UDim2.new(1, -20, 0, 2)
-separator.Parent = sidePanel
+-- Pestañas laterales del borde derecho (Velocidad, Combate, Steal, etc.)
+local tabFrame = Instance.new("Frame")
+tabFrame.Name = "TabFrame"
+tabFrame.Size = UDim2.new(0, 60, 1, -40)
+tabFrame.Position = UDim2.new(1, -60, 0, 40)
+tabFrame.BackgroundTransparency = 1
+tabFrame.Parent = sidePanel
+
+local tabList = Instance.new("UIListLayout")
+tabList.SortOrder = Enum.SortOrder.LayoutOrder
+tabList.Padding = UDim.new(0, 12)
+tabList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+tabList.Parent = tabFrame
+
+local tabs = {"Velocidad", "Combate", "Steal", "Movement", "Visual"}
+for _, tabName in ipairs(tabs) do
+	local tabBtn = Instance.new("TextButton")
+	tabBtn.Size = UDim2.new(1, 0, 0, 18)
+	tabBtn.BackgroundTransparency = 1
+	tabBtn.Text = tabName
+	tabBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+	tabBtn.Font = Enum.Font.SourceSans
+	tabBtn.TextSize = 11
+	tabBtn.Parent = tabFrame
+end
+
+-- Contenedor principal para los ajustes (Izquierda)
+local scrollContent = Instance.new("ScrollingFrame")
+scrollContent.Name = "ScrollContent"
+scrollContent.Size = UDim2.new(1, -65, 1, -40)
+scrollContent.Position = UDim2.new(0, 5, 0, 40)
+scrollContent.BackgroundTransparency = 1
+scrollContent.BorderSizePixel = 0
+scrollContent.ScrollBarThickness = 2
+scrollContent.CanvasSize = UDim2.new(0, 0, 0, 320)
+scrollContent.Parent = sidePanel
+
+local contentList = Instance.new("UIListLayout")
+contentList.SortOrder = Enum.SortOrder.LayoutOrder
+contentList.Padding = UDim.new(0, 8)
+contentList.Parent = scrollContent
+
+-- Función auxiliar para crear etiquetas de sección
+local function createSectionHeader(text)
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, 0, 0, 15)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(150, 150, 150)
+	label.Font = Enum.Font.SourceSansBold
+	label.TextSize = 10
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.Parent = scrollContent
+end
+
+-- Función auxiliar para crear elementos con cuadro de texto (Input Value)
+local function createInputRow(labelText, defaultValue)
+	local row = Instance.new("Frame")
+	row.Size = UDim2.new(1, 0, 0, 28)
+	row.BackgroundTransparency = 1
+	row.Parent = scrollContent
+
+	local txt = Instance.new("TextLabel")
+	txt.Size = UDim2.new(0.65, 0, 1, 0)
+	txt.BackgroundTransparency = 1
+	txt.Text = labelText
+	txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+	txt.Font = Enum.Font.SourceSans
+	txt.TextSize = 11
+	txt.TextXAlignment = Enum.TextXAlignment.Left
+	txt.Parent = row
+
+	local box = Instance.new("TextBox")
+	box.Size = UDim2.new(0.3, 0, 0.8, 0)
+	box.Position = UDim2.new(0.7, 0, 0.1, 0)
+	box.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	box.BackgroundTransparency = 0.4
+	box.Text = defaultValue
+	box.TextColor3 = Color3.fromRGB(255, 255, 255)
+	box.Font = Enum.Font.SourceSansBold
+	box.TextSize = 11
+	box.Parent = row
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 4)
+	corner.Parent = box
+end
+
+-- Construcción de opciones internas del panel
+createSectionHeader("SPEED CONFIGURATION")
+createInputRow("Velocidad Normal", "30")
+createInputRow("Velocidad de transporte", "29")
+
+createSectionHeader("LAGGER MODE")
+createInputRow("Lagger Normal", "30")
+createInputRow("Carga de retrasador", "15")
+
+createSectionHeader("CONTROLS")
+createInputRow("Carry Mode", "C")
+createInputRow("Modo Lagger", "K")
 
 --------------------------------------------------------------------------------
--- 3. BOTÓN IZQUIERDO (BRAxIL HUB) - SIN BORDE
+-- 3. BOTÓN IZQUIERDO (BRAxIL HUB)
 --------------------------------------------------------------------------------
 local leftButton = Instance.new("TextButton")
 leftButton.Name = "LeftMenuButton"
 leftButton.Text = "BRAxIL HUB"
-leftButton.TextColor3 = Color3.fromRGB(255, 255, 255) -- Texto blanco
+leftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 leftButton.Font = Enum.Font.SourceSansBold
 leftButton.TextSize = 13
 leftButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
