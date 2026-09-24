@@ -327,7 +327,7 @@ local function buildGUI()
     GuiHub=Instance.new("ScreenGui")
     GuiHub.Name="BRAxILHub"; GuiHub.ResetOnSpawn=false
     GuiHub.ZIndexBehavior=Enum.ZIndexBehavior.Sibling; GuiHub.Parent=PlayerGui
-    GuiHub.Enabled = false
+    GuiHub.Enabled = true
     GuiRefs.hub=GuiHub
 
     Outer=Instance.new("Frame")
@@ -377,7 +377,7 @@ local function buildGUI()
     CloseBtn.MouseLeave:Connect(function() tw(CloseBtn,{BackgroundColor3=C.bgDark,TextColor3=C.textMuted}) end)
 
     MiniBtn=Instance.new("TextButton")
-    MiniBtn.Size=UDim2.new(0,110,0,28); MiniBtn.Position=UDim2.new(0,15,0,65)
+    MiniBtn.Size=UDim2.new(0,110,0,28); MiniBtn.Position=UDim2.new(0,15,0,15)
     MiniBtn.BackgroundColor3=C.bgDark; MiniBtn.BorderSizePixel=0
     MiniBtn.Text="BRAxIL HUB"; MiniBtn.TextColor3=Color3.fromRGB(255,255,255); MiniBtn.Font=Enum.Font.GothamBlack; MiniBtn.TextSize=11
     MiniBtn.ZIndex=20; MiniBtn.Visible=false; MiniBtn.Parent=GuiHub
@@ -395,7 +395,6 @@ local function buildGUI()
     HSep.Position=UDim2.new(0,14,0,62); HSep.Size=UDim2.new(1,-28,0,1); HSep.BackgroundColor3=C.blue
     HSep.BackgroundTransparency=0.7; HSep.BorderSizePixel=0; HSep.Parent=Inner; HSep.ZIndex=2
 
-    -- CATEGORÍAS DEL LADO IZQUIERDO
     local LeftPanel=Instance.new("Frame")
     LeftPanel.Name="LeftPanel"; LeftPanel.Size=UDim2.new(0,85,1,-118); LeftPanel.Position=UDim2.new(0,6,0,70)
     LeftPanel.BackgroundColor3=C.bgDark; LeftPanel.BackgroundTransparency=0.5; LeftPanel.BorderSizePixel=0
@@ -429,7 +428,6 @@ local function buildGUI()
     BotSep.Position=UDim2.new(0,8,1,-54); BotSep.Size=UDim2.new(1,-16,0,1); BotSep.BackgroundColor3=C.blue
     BotSep.BackgroundTransparency=0.65; BotSep.BorderSizePixel=0; BotSep.Parent=Inner; BotSep.ZIndex=2
 
-    -- CATEGORIES
     local Categories={"Speed","Combat","Steal","Movement","Visual"}
     local CategoryRefs={contents={},btnsSide={},active="Speed"}
     for _,name in pairs(Categories) do
@@ -714,7 +712,6 @@ gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Right
 gridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- Botones conectados al panel GUI
 local buttonData = {
 	{ text = "INSTA\nRESET", bType = "Flash", action = function() cursedInstaReset() end },
 	{ text = "AUTO\nLEFT", bType = "Toggle", toggle = function(on) autoLeftEnabled=on; if autoLeftSetVisual then autoLeftSetVisual(on) end; saveConfig() end },
@@ -798,88 +795,8 @@ for index, data in ipairs(buttonData) do
 end
 
 -- ============================================================
--- CONSTRUIR PANEL GUI
+-- CONSTRUIR PANEL GUI (con el MiniBtn que abre el panel)
 -- ============================================================
 buildGUI()
-
--- ============================================================
--- BOTÓN IZQUIERDO "BRAxIL HUB" (RESTAURADO) - ABRE EL PANEL GUI
--- ============================================================
-local leftButton = Instance.new("TextButton")
-leftButton.Name = "LeftMenuButton"
-leftButton.Text = "BRAxIL HUB"
-leftButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-leftButton.Font = Enum.Font.SourceSansBold
-leftButton.TextSize = 13
-leftButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-leftButton.BorderSizePixel = 0
-leftButton.AnchorPoint = Vector2.new(0, 0)
-leftButton.Position = UDim2.new(0, 15, 0, 65)
-leftButton.Size = UDim2.new(0, 130, 0, 35)
-leftButton.Parent = screenGui
-
-local leftCorner = Instance.new("UICorner")
-leftCorner.CornerRadius = UDim.new(0, 8)
-leftCorner.Parent = leftButton
-
--- Arrastre con detección de toque vs arrastre
-local btnDragging = false
-local btnDragInput = nil
-local btnDragStart = nil
-local btnStartPos = nil
-local btnWasDragged = false
-
-leftButton.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 
-		or input.UserInputType == Enum.UserInputType.Touch then
-		btnDragging = true
-		btnWasDragged = false
-		btnDragStart = input.Position
-		btnStartPos = leftButton.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				btnDragging = false
-			end
-		end)
-	end
-end)
-
-leftButton.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement 
-		or input.UserInputType == Enum.UserInputType.Touch then
-		btnDragInput = input
-	end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-	if btnDragging and input == btnDragInput then
-		local delta = input.Position - btnDragStart
-		if delta.Magnitude > 5 then
-			btnWasDragged = true
-		end
-		leftButton.Position = UDim2.new(
-			btnStartPos.X.Scale,
-			btnStartPos.X.Offset + delta.X,
-			btnStartPos.Y.Scale,
-			btnStartPos.Y.Offset + delta.Y
-		)
-	end
-end)
-
--- Al tocar (sin arrastrar): abre el panel GUI
-leftButton.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 
-		or input.UserInputType == Enum.UserInputType.Touch then
-		if not btnWasDragged then
-			if GuiHub then
-				GuiHub.Enabled = true
-				if Outer then Outer.Visible = true end
-				if MiniBtn then MiniBtn.Visible = false end
-			end
-		end
-		btnWasDragged = false
-	end
-end)
 
 print("BRAxIL HUB GUI LOADED")
