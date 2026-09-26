@@ -9,6 +9,55 @@ local Lighting = game:GetService("Lighting")
 local HS = game:GetService("HttpService")
 local player = Players.LocalPlayer
 
+-- ============================================================
+-- SINGLE INSTANCE GUARD (cierra instancia previa si existe)
+-- ============================================================
+do
+    local CoreGui = game:GetService("CoreGui")
+    local PlayerGui = player:FindFirstChild("PlayerGui")
+
+    local guiNames = {
+        "MOTXHub", "RXZMobileButtons", "SpectrumMobileButtons",
+        "MoveeMobileButtons", "MoveeStealBar"
+    }
+    for _, name in ipairs(guiNames) do
+        local g1 = CoreGui:FindFirstChild(name)
+        if g1 then pcall(function() g1:Destroy() end) end
+        if PlayerGui then
+            local g2 = PlayerGui:FindFirstChild(name)
+            if g2 then pcall(function() g2:Destroy() end) end
+        end
+    end
+
+    for _, g in ipairs(CoreGui:GetChildren()) do
+        if g.Name:match("^MoveeRagdollTimer_") then
+            pcall(function() g:Destroy() end)
+        end
+    end
+    if PlayerGui then
+        for _, g in ipairs(PlayerGui:GetChildren()) do
+            if g.Name:match("^MoveeRagdollTimer_") then
+                pcall(function() g:Destroy() end)
+            end
+        end
+    end
+
+    if _G.MOTX_HUB_CONNS then
+        for _, conn in ipairs(_G.MOTX_HUB_CONNS) do
+            pcall(function() conn:Disconnect() end)
+        end
+        _G.MOTX_HUB_CONNS = nil
+    end
+    _G.MOTX_HUB_CONNS = {}
+
+    if _G.MOTX_HUB_INTRO_SOUND then
+        pcall(function() _G.MOTX_HUB_INTRO_SOUND:Destroy() end)
+        _G.MOTX_HUB_INTRO_SOUND = nil
+    end
+
+    _G.MOTX_HUB_RUNNING = true
+end
+
 -- ------------------------------------------------------------
 -- EARLY CONFIG LOAD (for intro sound setting)
 -- ------------------------------------------------------------
@@ -48,11 +97,12 @@ if introSoundEnabled then
         introSoundInstance.Volume = 3
         introSoundInstance.Looped = false
         introSoundInstance.Parent = game:GetService("CoreGui")
+        _G.MOTX_HUB_INTRO_SOUND = introSoundInstance
         introSoundInstance:Play()
     end)
 end
 
-repeat task.wait() until game:IsLoaded()
+-- (eliminado el bloqueo repeat task.wait() until game:IsLoaded() para carga instantánea)
 
 -- ============================================================
 -- SKY THEME SYSTEM
