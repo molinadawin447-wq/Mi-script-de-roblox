@@ -992,8 +992,10 @@ refreshSpeedModeLabel=function()
     if modeValLbl then
         if laggerModeEnabled then 
             modeValLbl.Text = carrySpeedActive and "Lagger Carry" or "Lagger Mode"
-        elseif carrySpeedActive then modeValLbl.Text="Carry"
-        else modeValLbl.Text="Normal" end
+        elseif carrySpeedActive then
+            modeValLbl.Text="Carry"
+        else
+            modeValLbl.Text="Normal" end
     end
     if laggerModePillRef and laggerModePillRef.pill and laggerModePillRef.dot then
         local pill=laggerModePillRef.pill;local dot=laggerModePillRef.dot;local on=laggerModeEnabled
@@ -1076,7 +1078,7 @@ stopUnwalk=function() local c=LP.Character;if c and unwalkSavedAnimate then unwa
 
 
 -- ============================================================
--- STEAL BAR (alb/negru)
+-- STEAL BAR (fondo blanco, barra negra)
 -- ============================================================
 local function createStealBar()
     for _,n in ipairs({"MoveeStealBar"}) do
@@ -1084,49 +1086,60 @@ local function createStealBar()
         local pgui=LP:FindFirstChild("PlayerGui");if pgui then local o=pgui:FindFirstChild(n);if o then o:Destroy() end end
     end
     local WHITE=Color3.fromRGB(255,255,255)
-    local BARBG=Color3.fromRGB(18,10,15)
+    local BLACK=Color3.fromRGB(0,0,0)
     local SB_W,SB_H=330,32
     local stealGui=Instance.new("ScreenGui");stealGui.Name="MoveeStealBar";stealGui.ResetOnSpawn=false;stealGui.IgnoreGuiInset=true;stealGui.DisplayOrder=8
     pcall(function() if syn and syn.protect_gui then syn.protect_gui(stealGui) end end)
     if not pcall(function() stealGui.Parent=game:GetService("CoreGui") end) then stealGui.Parent=LP:WaitForChild("PlayerGui") end
     stealBarFrame=Instance.new("Frame",stealGui)
     stealBarFrame.Size=UDim2.new(0,SB_W,0,SB_H);stealBarFrame.Position=UDim2.new(0.5,-SB_W/2,0.06,0)
-    stealBarFrame.BackgroundColor3=BARBG;stealBarFrame.BorderSizePixel=0;stealBarFrame.ZIndex=20;stealBarFrame.ClipsDescendants=true
+    stealBarFrame.BackgroundColor3=WHITE;stealBarFrame.BorderSizePixel=0;stealBarFrame.ZIndex=20;stealBarFrame.ClipsDescendants=true
     Instance.new("UICorner",stealBarFrame).CornerRadius=UDim.new(1,0)
-    local sbStroke=Instance.new("UIStroke",stealBarFrame);sbStroke.Color=WHITE;sbStroke.Thickness=2;sbStroke.Transparency=0.3
+
+    local sbStroke=Instance.new("UIStroke",stealBarFrame);sbStroke.Color=BLACK;sbStroke.Thickness=2;sbStroke.Transparency=0.3
     task.spawn(function()
         local t=0
         while sbStroke and sbStroke.Parent do
             t=t+0.05
             sbStroke.Transparency=0.2+math.abs(math.sin(t*2))*0.35
-            sbStroke.Color=Color3.fromRGB(255,255,255)
+            sbStroke.Color=Color3.fromRGB(0,0,0)
             task.wait(0.04)
         end
     end)
-    local fillLine=Instance.new("Frame",stealBarFrame);fillLine.Size=UDim2.new(0,0,1,0)
-    fillLine.BackgroundColor3=WHITE;fillLine.BorderSizePixel=0;fillLine.ZIndex=21
-    Instance.new("UICorner",fillLine).CornerRadius=UDim.new(1,0)
+
+    -- Barra de relleno (carga) -- será negra, ocupará todo el alto
+    local fillLine=Instance.new("Frame",stealBarFrame)
+    fillLine.Size=UDim2.new(0,0,1,0) -- Empieza con ancho 0
+    fillLine.BackgroundColor3=BLACK
+    fillLine.BorderSizePixel=0
+    fillLine.ZIndex=21
+    Instance.new("UICorner",fillLine).CornerRadius=UDim.new(1,0) -- Redondeado para coincidir con el fondo
+
     local fillGrad=Instance.new("UIGradient",fillLine)
-    fillGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(200,200,200)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(255,255,255)),ColorSequenceKeypoint.new(1,Color3.fromRGB(200,200,200))})
+    fillGrad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(0,0,0)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(10,10,10)),ColorSequenceKeypoint.new(1,Color3.fromRGB(0,0,0))})
+
+    -- Resto de elementos (textos, separadores, etc.) se mantienen igual,
+    -- pero ahora se colocan con un ZIndex superior para verse sobre el fondo blanco.
     local stealSection=Instance.new("Frame",stealBarFrame)
     stealSection.Size=UDim2.new(0,110,1,0);stealSection.Position=UDim2.new(0,12,0,0)
     stealSection.BackgroundTransparency=1;stealSection.ZIndex=25
     local stealLbl=Instance.new("TextLabel",stealSection)
     stealLbl.Size=UDim2.new(0,55,1,0);stealLbl.Position=UDim2.new(0,0,0,0)
     stealLbl.BackgroundTransparency=1;stealLbl.Text="STEAL"
-    stealLbl.TextColor3=WHITE;stealLbl.Font=Enum.Font.GothamBlack;stealLbl.TextSize=12
+    stealLbl.TextColor3=BLACK;stealLbl.Font=Enum.Font.GothamBlack;stealLbl.TextSize=12
     stealLbl.TextXAlignment=Enum.TextXAlignment.Left;stealLbl.ZIndex=26
     local pctLbl=Instance.new("TextLabel",stealSection)
     pctLbl.Size=UDim2.new(0,50,1,0);pctLbl.Position=UDim2.new(0,55,0,0)
     pctLbl.BackgroundTransparency=1;pctLbl.Text="0%"
-    pctLbl.TextColor3=WHITE;pctLbl.Font=Enum.Font.GothamBlack;pctLbl.TextSize=12
+    pctLbl.TextColor3=BLACK;pctLbl.Font=Enum.Font.GothamBlack;pctLbl.TextSize=12
     pctLbl.TextXAlignment=Enum.TextXAlignment.Left;pctLbl.ZIndex=26
     local div1=Instance.new("Frame",stealBarFrame);div1.Size=UDim2.new(0,1,0,SB_H*0.5);div1.Position=UDim2.new(0,128,0.5,-(SB_H*0.5)/2)
-    div1.BackgroundColor3=WHITE;div1.BackgroundTransparency=0.6;div1.BorderSizePixel=0;div1.ZIndex=25
+    div1.BackgroundColor3=BLACK;div1.BackgroundTransparency=0.6;div1.BorderSizePixel=0;div1.ZIndex=25
+
     local fpsLbl=Instance.new("TextLabel",stealBarFrame)
     fpsLbl.Size=UDim2.new(0,68,1,0);fpsLbl.Position=UDim2.new(0,138,0,0)
     fpsLbl.BackgroundTransparency=1;fpsLbl.Text="FPS: --"
-    fpsLbl.TextColor3=WHITE;fpsLbl.Font=Enum.Font.GothamBold;fpsLbl.TextSize=10
+    fpsLbl.TextColor3=BLACK;fpsLbl.Font=Enum.Font.GothamBold;fpsLbl.TextSize=10
     fpsLbl.TextXAlignment=Enum.TextXAlignment.Left;fpsLbl.ZIndex=26
     task.spawn(function()
         local frames=0;local t0=tick()
@@ -1141,20 +1154,21 @@ local function createStealBar()
         end
     end)
     local div2=Instance.new("Frame",stealBarFrame);div2.Size=UDim2.new(0,1,0,SB_H*0.5);div2.Position=UDim2.new(0,210,0.5,-(SB_H*0.5)/2)
-    div2.BackgroundColor3=WHITE;div2.BackgroundTransparency=0.6;div2.BorderSizePixel=0;div2.ZIndex=25
+    div2.BackgroundColor3=BLACK;div2.BackgroundTransparency=0.6;div2.BorderSizePixel=0;div2.ZIndex=25
+
     local pingLbl=Instance.new("TextLabel",stealBarFrame)
     pingLbl.Size=UDim2.new(0,110,1,0);pingLbl.Position=UDim2.new(0,218,0,0)
     pingLbl.BackgroundTransparency=1;pingLbl.Text="PING: --"
-    pingLbl.TextColor3=WHITE;pingLbl.Font=Enum.Font.GothamBold;pingLbl.TextSize=10
+    pingLbl.TextColor3=BLACK;pingLbl.Font=Enum.Font.GothamBold;pingLbl.TextSize=10
     pingLbl.TextXAlignment=Enum.TextXAlignment.Left;pingLbl.ZIndex=26
     task.spawn(function()
         while pingLbl and pingLbl.Parent do
             pcall(function()
                 local ping=math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue())
                 local pingColor
-                if ping<80 then pingColor=Color3.fromRGB(0,255,120)
-                elseif ping<150 then pingColor=Color3.fromRGB(255,200,0)
-                else pingColor=Color3.fromRGB(255,60,60) end
+                if ping<80 then pingColor=Color3.fromRGB(0,180,0)
+                elseif ping<150 then pingColor=Color3.fromRGB(200,150,0)
+                else pingColor=Color3.fromRGB(200,0,0) end
                 pingLbl.Text="PING: "..tostring(ping).."ms"
                 pingLbl.TextColor3=pingColor
             end)
@@ -1169,11 +1183,13 @@ local function createStealBar()
                 local pct=0
                 if isStealing and stealStartTime then
                     pct=math.clamp((now-stealStartTime)/Steal.StealDuration,0,1)
-                    fillLine.Size=UDim2.new(pct,0,1,0);fillGrad.Offset=Vector2.new(math.sin(now*3)*0.5,0)
+                    fillLine.Size=UDim2.new(pct,0,1,0)
+                    fillGrad.Offset=Vector2.new(math.sin(now*3)*0.5,0)
                 elseif inRadius then
                     local cyclePos=(now%Steal.StealDuration)/Steal.StealDuration
                     pct=cyclePos*cyclePos*(3-2*cyclePos)
-                    fillLine.Size=UDim2.new(pct,0,1,0);fillGrad.Offset=Vector2.new(math.sin(now*3)*0.5,0)
+                    fillLine.Size=UDim2.new(pct,0,1,0)
+                    fillGrad.Offset=Vector2.new(math.sin(now*3)*0.5,0)
                 else fillLine.Size=UDim2.new(0,0,1,0) end
                 pctLbl.Text=math.floor(pct*100).."%"
             else
@@ -1807,9 +1823,10 @@ _GuiKeys = Keys
     grad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(4,4,4)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(7,7,7)),ColorSequenceKeypoint.new(1,Color3.fromRGB(4,4,4))})
     grad.Rotation=135; grad.Parent=BgGrad; GuiRefs.bgGrad=BgGrad
 
+    -- CAMBIO: Fondo del panel con Imagenpanelv2.jpg
     local BgImg=Instance.new("ImageLabel")
     BgImg.Name="BackgroundImage"; BgImg.Size=UDim2.new(1,0,1,0); BgImg.BackgroundTransparency=1
-    BgImg.Image="rbxassetid://131288871967315"; BgImg.ScaleType=Enum.ScaleType.Crop; BgImg.ZIndex=0
+    BgImg.Image=getcustomasset("Imagenpanelv2.jpg"); BgImg.ScaleType=Enum.ScaleType.Crop; BgImg.ZIndex=0
     BgImg.ImageTransparency=0.55; BgImg.Visible=true
     BgImg.Parent=BgCont; guiCorner(BgImg,24); GuiRefs.backgroundImage=BgImg; bgImageRef=BgImg
 
@@ -1858,8 +1875,9 @@ _GuiKeys = Keys
     HSep.Position=UDim2.new(0,14,0,62); HSep.Size=UDim2.new(1,-28,0,1); HSep.BackgroundColor3=C.blue
     HSep.BackgroundTransparency=0.7; HSep.BorderSizePixel=0; HSep.Parent=Inner; HSep.ZIndex=2
 
+    -- CAMBIO: Panel izquierdo, botones más grandes
     LeftPanel=Instance.new("Frame")
-    LeftPanel.Name="LeftPanel"; LeftPanel.Size=UDim2.new(0,85,1,-118); LeftPanel.Position=UDim2.new(1,-85,0,63)
+    LeftPanel.Name="LeftPanel"; LeftPanel.Size=UDim2.new(0,85,1,-118); LeftPanel.Position=UDim2.new(0,0,0,63)
     LeftPanel.BackgroundColor3=C.bgDark; LeftPanel.BackgroundTransparency=0.5; LeftPanel.BorderSizePixel=0
     LeftPanel.Parent=Inner; guiCorner(LeftPanel,12); LeftPanel.ZIndex=2
 
@@ -1874,7 +1892,7 @@ _GuiKeys = Keys
     GuiRefs.categoryList=CatList
 
     local CF=Instance.new("ScrollingFrame")
-    CF.Name="ContentFrame"; CF.Size=UDim2.new(1,-95,1,-118); CF.Position=UDim2.new(0,0,0,63)
+    CF.Name="ContentFrame"; CF.Size=UDim2.new(1,-95,1,-118); CF.Position=UDim2.new(0,90,0,63)
     CF.BackgroundTransparency=1; CF.BorderSizePixel=0; CF.ScrollBarThickness=6; CF.ScrollBarImageColor3=C.blue
     CF.CanvasSize=UDim2.new(0,0,0,0); CF.AutomaticCanvasSize=Enum.AutomaticSize.Y
     CF.ScrollingDirection=Enum.ScrollingDirection.Y; CF.ScrollingEnabled=true; CF.Active=true
@@ -2002,7 +2020,8 @@ local function addCycleRow(parent,label,value,order,onCycle)
 end
 
 -- CATEGORY SETUP
-local Categories={"Speed","Combat","Steal","Movement","Visual"}
+-- CAMBIO: orden de categorías solicitado
+local Categories={"Speed","Combat","Movement","Steal","Visual"}
 local CategoryRefs={contents={},btnsSide={},active="Speed"}
 ;(function()
     for _,name in pairs(Categories) do
@@ -2011,7 +2030,8 @@ local CategoryRefs={contents={},btnsSide={},active="Speed"}
         local lay=Instance.new("UIListLayout"); lay.SortOrder=Enum.SortOrder.LayoutOrder; lay.Padding=UDim.new(0,6); lay.Parent=page
     end
     for i,name in ipairs(Categories) do
-        local btn=Instance.new("TextButton"); btn.Size=UDim2.new(1,0,0,32); btn.BackgroundColor3=C.blueDark
+        -- CAMBIO: botones más grandes (altura 36)
+        local btn=Instance.new("TextButton"); btn.Size=UDim2.new(1,0,0,36); btn.BackgroundColor3=C.blueDark
         btn.BackgroundTransparency=0.3; btn.Text=name; btn.TextColor3=(name=="Speed") and C.white or C.textMuted
         btn.TextSize=10; btn.Font=Enum.Font.GothamBold; btn.BorderSizePixel=0; btn.LayoutOrder=i; btn.Parent=GuiRefs.categoryList; guiCorner(btn,6)
         local ind=Instance.new("Frame"); ind.Name="indicator"; ind.Size=UDim2.new(0,2,0,16); ind.Position=UDim2.new(1,-2,0.5,-8)
