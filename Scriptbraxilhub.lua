@@ -1,5 +1,5 @@
---RXZ HUB
---MOBILE EDITION
+-- MOTX HUB
+-- MOBILE EDITION
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -13,15 +13,15 @@ local player = Players.LocalPlayer
 -- EARLY CONFIG LOAD (for intro sound setting)
 -- ------------------------------------------------------------
 local introSoundEnabled = true
-if isfile and isfile("RXZ_HUB.json") then
-    local ok, data = pcall(function() return HS:JSONDecode(readfile("RXZ_HUB.json")) end)
+if isfile and isfile("MOTX_HUB.json") then
+    local ok, data = pcall(function() return HS:JSONDecode(readfile("MOTX_HUB.json")) end)
     if ok and type(data) == "table" and data.introSoundEnabled ~= nil then
         introSoundEnabled = data.introSoundEnabled
     end
 end
 -- Load Cyber extras from saved config
-if isfile and isfile("RXZ_HUB.json") then
-    local ok2, d2 = pcall(function() return HS:JSONDecode(readfile("RXZ_HUB.json")) end)
+if isfile and isfile("MOTX_HUB.json") then
+    local ok2, d2 = pcall(function() return HS:JSONDecode(readfile("MOTX_HUB.json")) end)
     if ok2 and type(d2)=="table" then
         if type(d2.animEnabled)=="boolean" then animEnabled=d2.animEnabled end
         if type(d2.backgroundEnabled)=="boolean" then backgroundEnabled=d2.backgroundEnabled end
@@ -129,7 +129,7 @@ local laggerModeEnabled = false
 local antiRagdollEnabled,infJumpEnabled=false,false
 local medusaCounterEnabled,batCounterEnabled,unwalkEnabled=false,false,false
 local medusaDebounce,medusaLastUsed,dropActive=false,0,false
--- RXZ HUB extra state (single table to stay under the local limit)
+-- MOTX HUB extra state (single table to stay under the local limit)
 local RXZ={medusaReset=false,antiKick=false,brainrot=false,tpBat=false,batV2=false,tpConn=nil,v2Conn=nil,v2Rot=nil,hitCD=false,v2CD=false}
 local autoLeftEnabled,autoRightEnabled=false,false
 local autoLeftSetVisual,autoRightSetVisual=nil,nil
@@ -300,7 +300,7 @@ do
 end
 
 
-local MOB_POS_FILE="RXZ_BtnPos.json"
+local MOB_POS_FILE="MOTX_BtnPos.json"
 local function loadBtnPositions()
     if not(isfile and isfile(MOB_POS_FILE)) then return {} end
     local ok,data=pcall(function() return HS:JSONDecode(readfile(MOB_POS_FILE)) end)
@@ -795,7 +795,7 @@ setupMedusa=function(char)
 end
 stopMedusaCounter=function() for _,c in pairs(Conns.anchor) do pcall(function() c:Disconnect() end) end;Conns.anchor={} end
 -- ============================================================
--- ANTI KICK (from RXZ)
+-- ANTI KICK (from MOTX)
 -- ============================================================
 function RXZ.enableAntiKick()
     RXZ.antiKick=true
@@ -954,7 +954,7 @@ saveConfig=function()
         else return {kb=nil,gp=nil} end
     end
     local cfg={normalSpeed=NS,carrySpeed=CS,dropBrainrotKey=ks(KB.DropBrainrot),autoLeftKey=ks(KB.AutoLeft),autoRightKey=ks(KB.AutoRight),autoBatKey=ks(KB.AutoBat),laggerToggleKey=ks(KB.LaggerToggle),tpFloorKey=ks(KB.TPFloor),instaResetKey=ks(KB.InstaReset),guiHideKey=ks(KB.GuiHide),speedToggleKey=ks(KB.SpeedToggle),grabRadius=Steal.StealRadius,stealDuration=Steal.StealDuration,antiRagdoll=antiRagdollEnabled,autoStealEnabled=Steal.AutoStealEnabled,infiniteJump=infJumpEnabled,infJumpMode=infJumpMode,medusaCounter=medusaCounterEnabled,batCounter=batCounterEnabled,carrySpeedActive=carrySpeedActive,laggerModeEnabled=laggerModeEnabled,laggerSpeed=LAGGER_SPEED,laggerCarrySpeed=LAGGER_CARRY_SPEED,autoBat=autoBatEnabled,autoSwing=autoSwingEnabled,unwalkEnabled=unwalkEnabled,antiLag=antiLagEnabled,stretchRez=stretchRezEnabled,autoTPEnabled=autoTPEnabled,autoTPHeight=autoTPHeight,guiTransparencyEnabled=guiTransparencyEnabled,mobileButtonsEnabled=mobileButtonsEnabled,mobileButtonsLocked=mobileButtonsLocked,mobileButtonsSize=mobileButtonsSize,circleButtonsEnabled=circleButtonsEnabled,autoSwitchSpeed=autoSwitchSpeedEnabled,fovValue=fovValue,perButtonDrag=perButtonDragEnabled,skyTheme=currentSkyTheme,medusaReset=RXZ.medusaReset,antiKick=RXZ.antiKick,autoMoveSwing=autoMoveSwingEnabled,autoMoveSwingInterval=autoMoveSwingInterval,ragdollGui=ragdollGuiEnabled,introSoundEnabled=introSoundEnabled,animEnabled=animEnabled,backgroundEnabled=backgroundEnabled,backgroundIndex=backgroundIndex,keys=(function() if not _GuiKeys then return {} end;local t={};for k,v in pairs(_GuiKeys) do t[k]=v.Name end;return t end)()}
-    if writefile then pcall(function() writefile("RXZ_HUB.json",HS:JSONEncode(cfg)) end) end
+    if writefile then pcall(function() writefile("MOTX_HUB.json",HS:JSONEncode(cfg)) end) end
 end
 task.spawn(function() while task.wait(5) do saveConfig() end end)
 local function resetAllSettings()
@@ -1219,13 +1219,13 @@ createStealBar()
 -- ============================================================
 -- TP BAT + BAT V2 (no external GUI, integrated in mobile buttons)
 -- ============================================================
-local RXZ_SLAP_LIST={"Bat","Slap","Iron Slap","Gold Slap","Diamond Slap","Emerald Slap","Ruby Slap","Dark Matter Slap","Flame Slap","Nuclear Slap","Galaxy Slap","Glitched Slap"}
+local MOTX_SLAP_LIST={"Bat","Slap","Iron Slap","Gold Slap","Diamond Slap","Emerald Slap","Ruby Slap","Dark Matter Slap","Flame Slap","Nuclear Slap","Galaxy Slap","Glitched Slap"}
 function RXZ.findBat()
     local char=LP.Character; if not char then return nil end
-    for _,name in ipairs(RXZ_SLAP_LIST) do local t=char:FindFirstChild(name); if t and t:IsA("Tool") then return t end end
+    for _,name in ipairs(MOTX_SLAP_LIST) do local t=char:FindFirstChild(name); if t and t:IsA("Tool") then return t end end
     local bp=LP:FindFirstChildOfClass("Backpack")
     if bp then
-        for _,name in ipairs(RXZ_SLAP_LIST) do
+        for _,name in ipairs(MOTX_SLAP_LIST) do
             local t=bp:FindFirstChild(name)
             if t and t:IsA("Tool") then
                 local hum=char:FindFirstChildOfClass("Humanoid")
@@ -1365,7 +1365,7 @@ function RXZ.stopBatV2()
 end
 
 -- ============================================================
--- MOBILE BUTTONS  (RXZ stack-button style)
+-- MOBILE BUTTONS  (MOTX stack-button style)
 -- ============================================================
 local function destroyMobileButtons()
     if mobGuiRef then pcall(function() mobGuiRef:Destroy() end);mobGuiRef=nil end
@@ -1600,8 +1600,8 @@ end
 -- FULL CONFIG LOAD (inainte de build GUI, pentru ca GUI sa citeasca valorile corecte)
 -- ============================================================
 pcall(function()
-    if not(isfile and isfile("RXZ_HUB.json")) then return end
-    local ok,d=pcall(function() return HS:JSONDecode(readfile("RXZ_HUB.json")) end)
+    if not(isfile and isfile("MOTX_HUB.json")) then return end
+    local ok,d=pcall(function() return HS:JSONDecode(readfile("MOTX_HUB.json")) end)
     if not(ok and type(d)=="table") then return end
     if type(d.normalSpeed)=="number" and d.normalSpeed>0 then NS=d.normalSpeed end
     if type(d.carrySpeed)=="number" and d.carrySpeed>0 then CS=d.carrySpeed end
@@ -1782,8 +1782,8 @@ local Keys={
 }
 -- Aplica keybind-urile salvate si inregistreaza referinta pentru saveConfig
 pcall(function()
-    if not(isfile and isfile("RXZ_HUB.json")) then return end
-    local ok,d=pcall(function() return HS:JSONDecode(readfile("RXZ_HUB.json")) end)
+    if not(isfile and isfile("MOTX_HUB.json")) then return end
+    local ok,d=pcall(function() return HS:JSONDecode(readfile("MOTX_HUB.json")) end)
     if ok and type(d)=="table" and type(d.keys)=="table" then
         for k,v in pairs(d.keys) do
             local ok2,kc=pcall(function() return Enum.KeyCode[v] end)
@@ -1796,7 +1796,7 @@ _GuiKeys = Keys
 -- BUILD HUB GUI
 ;(function()
     local GuiHub=Instance.new("ScreenGui")
-    GuiHub.Name="RXZHub"; GuiHub.ResetOnSpawn=false
+    GuiHub.Name="MOTXHub"; GuiHub.ResetOnSpawn=false
     GuiHub.ZIndexBehavior=Enum.ZIndexBehavior.Sibling; GuiHub.Parent=PlayerGui
     GuiRefs.hub=GuiHub
 
@@ -1823,11 +1823,11 @@ _GuiKeys = Keys
     grad.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,Color3.fromRGB(4,4,4)),ColorSequenceKeypoint.new(0.5,Color3.fromRGB(7,7,7)),ColorSequenceKeypoint.new(1,Color3.fromRGB(4,4,4))})
     grad.Rotation=135; grad.Parent=BgGrad; GuiRefs.bgGrad=BgGrad
 
-    -- CAMBIO: Fondo del panel con Imagenpanelv2.jpg
+    -- CAMBIO: Fondo del panel con Dineropanel.jpg
     local BgImg=Instance.new("ImageLabel")
     BgImg.Name="BackgroundImage"; BgImg.Size=UDim2.new(1,0,1,0); BgImg.BackgroundTransparency=1
-    BgImg.Image=getcustomasset("Imagenpanelv2.jpg"); BgImg.ScaleType=Enum.ScaleType.Crop; BgImg.ZIndex=0
-    BgImg.ImageTransparency=0.55; BgImg.Visible=true
+    BgImg.Image=getcustomasset("Dineropanel.jpg"); BgImg.ScaleType=Enum.ScaleType.Crop; BgImg.ZIndex=0
+    BgImg.ImageTransparency=0.35; BgImg.Visible=true
     BgImg.Parent=BgCont; guiCorner(BgImg,24); GuiRefs.backgroundImage=BgImg; bgImageRef=BgImg
 
     local HF=Instance.new("Frame")
@@ -1837,12 +1837,12 @@ _GuiKeys = Keys
 
     local TL=Instance.new("TextLabel")
     TL.Position=UDim2.new(0,14,0,8); TL.Size=UDim2.new(1,-90,0,22); TL.BackgroundTransparency=1
-    TL.Text="RXZ HUB"; TL.TextColor3=C.text; TL.TextSize=17; TL.Font=Enum.Font.GothamBlack
+    TL.Text="MOTX HUB"; TL.TextColor3=C.text; TL.TextSize=17; TL.Font=Enum.Font.GothamBlack
     TL.TextXAlignment=Enum.TextXAlignment.Left; TL.Parent=HF; TL.ZIndex=3
 
     local ML=Instance.new("TextLabel")
     ML.Position=UDim2.new(0,14,0,32); ML.Size=UDim2.new(0,200,0,14); ML.BackgroundTransparency=1
-    ML.Text="RXZ HUB â€¢ PREMIUM"; ML.TextColor3=C.textDim; ML.TextSize=10; ML.Font=Enum.Font.GothamBold
+    ML.Text="MOTX HUB â€¢ PREMIUM"; ML.TextColor3=C.textDim; ML.TextSize=10; ML.Font=Enum.Font.GothamBold
     ML.TextXAlignment=Enum.TextXAlignment.Left; ML.Parent=HF; ML.ZIndex=3
 
     -- MINIMIZE BUTTON
@@ -1859,7 +1859,7 @@ _GuiKeys = Keys
     local MiniBtn=Instance.new("TextButton")
     MiniBtn.Size=UDim2.new(0,110,0,28); MiniBtn.Position=Outer.Position
     MiniBtn.BackgroundColor3=C.bgDark; MiniBtn.BorderSizePixel=0
-    MiniBtn.Text="RXZ HUB"; MiniBtn.TextColor3=C.text; MiniBtn.Font=Enum.Font.GothamBlack; MiniBtn.TextSize=11
+    MiniBtn.Text="MOTX HUB"; MiniBtn.TextColor3=C.text; MiniBtn.Font=Enum.Font.GothamBlack; MiniBtn.TextSize=11
     MiniBtn.ZIndex=20; MiniBtn.Visible=false; MiniBtn.Parent=GuiRefs.hub
     guiCorner(MiniBtn,8); guiStroke(MiniBtn,Color3.fromRGB(45,45,45),1.2)
     makeDraggable_cyber(MiniBtn, MiniBtn)
@@ -2302,4 +2302,4 @@ buildMobileButtons()
 
 end)() -- end GUI function
 
-print("RXZ HUB LOADED")
+print("MOTX HUB LOADED")
